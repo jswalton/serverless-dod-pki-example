@@ -8,7 +8,7 @@ import { Port, SubnetType, Vpc } from '@aws-cdk/aws-ec2';
 import { BucketDeployment, Source } from '@aws-cdk/aws-s3-deployment';
 import { CfnParameter } from '@aws-cdk/core';
 
-export class ServerlessCacProxyTestStack extends cdk.Stack {
+export class ServerlessDodPkiExampleStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 

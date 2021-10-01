@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
 import * as cdk from '@aws-cdk/core';
-import { ServerlessCacProxyTestStack } from '../lib/serverless-cac-proxy-test-stack';
+import { ServerlessDodPkiExampleStack } from '../lib/serverless-dod-pki-example-stack';
 
 const app = new cdk.App();
-new ServerlessCacProxyTestStack(app, 'ServerlessCacProxyTestStack', {
+new ServerlessDodPkiExampleStack(app, 'ServerlessDodPkiExampleStack', {
   /* If you don't specify 'env', this stack will be environment-agnostic.
    * Account/Region-dependent features and context lookups will not work,
    * but a single synthesized template can be deployed anywhere. */
