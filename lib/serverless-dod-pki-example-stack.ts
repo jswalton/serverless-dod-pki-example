@@ -22,11 +22,11 @@ export class ServerlessDodPkiExampleStack extends cdk.Stack {
       description: "The ARN of the domain SSL certificate that has been imported in AWS certificate Manager"}
     );
 
-    const certificateBucket = new Bucket(this, 'mtls-certificate-bucket', {
+    const certificateBucket = new Bucket(this, 'truststore-bucket', {
       removalPolicy: RemovalPolicy.DESTROY,
     });
     
-    const dodTruststoreDeployment = new BucketDeployment(this, 'DeployFiles', {
+    const dodTruststoreDeployment = new BucketDeployment(this, 'dod-truststore-deployment', {
       sources: [Source.asset('./lib/dod-truststore')],
       destinationBucket: certificateBucket,
       retainOnDelete: false,
@@ -50,7 +50,7 @@ export class ServerlessDodPkiExampleStack extends cdk.Stack {
 
     loadBalancedFargateService.service.connections.allowFromAnyIpv4(Port.allTraffic())
 
-    const cacEnabledRestAPI = new RestApi(this, 'some-api', {
+    const cacEnabledRestAPI = new RestApi(this, 'example-api', {
       domainName: {
         certificate: Certificate.fromCertificateArn(this, "domain-cert", domainCertificateARN.valueAsString),
         domainName: domainName.valueAsString,
@@ -64,7 +64,7 @@ export class ServerlessDodPkiExampleStack extends cdk.Stack {
 
     cacEnabledRestAPI.node.addDependency(dodTruststoreDeployment);
 
-    const link = new VpcLink(this, 'link', {
+    const link = new VpcLink(this, 'example-vpc-link', {
       targets: [loadBalancedFargateService.loadBalancer],
     });
     
