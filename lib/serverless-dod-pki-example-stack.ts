@@ -6,7 +6,7 @@ import { ContainerImage } from '@aws-cdk/aws-ecs';
 import { NetworkLoadBalancedFargateService } from '@aws-cdk/aws-ecs-patterns';
 import { Port, SubnetType, Vpc } from '@aws-cdk/aws-ec2';
 import { BucketDeployment, Source } from '@aws-cdk/aws-s3-deployment';
-import { CfnParameter } from '@aws-cdk/core';
+import { CfnParameter, RemovalPolicy } from '@aws-cdk/core';
 
 export class ServerlessDodPkiExampleStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
@@ -22,12 +22,15 @@ export class ServerlessDodPkiExampleStack extends cdk.Stack {
       description: "The ARN of the domain SSL certificate that has been imported in AWS certificate Manager"}
     );
 
-    const certificateBucket = new Bucket(this, 'mtls-certificate-bucket');
+    const certificateBucket = new Bucket(this, 'mtls-certificate-bucket', {
+      removalPolicy: RemovalPolicy.DESTROY,
+    });
     
-    new BucketDeployment(this, 'DeployFiles', {
+    const dodTruststoreDeployment = new BucketDeployment(this, 'DeployFiles', {
       sources: [Source.asset('./lib/dod-truststore')],
       destinationBucket: certificateBucket,
-      retainOnDelete: false
+      retainOnDelete: false,
+
     });
 
     const vpc = new Vpc(this, 'CaCEnabledServicesVPC', {});
@@ -58,6 +61,8 @@ export class ServerlessDodPkiExampleStack extends cdk.Stack {
         }
       },
     });
+
+    cacEnabledRestAPI.node.addDependency(dodTruststoreDeployment);
 
     const link = new VpcLink(this, 'link', {
       targets: [loadBalancedFargateService.loadBalancer],
